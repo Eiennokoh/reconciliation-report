@@ -1,0 +1,22 @@
+# 秘密情報
+.env
+.env.*
+!.env.example
+
+# 実行結果（サンプルは docs/ に置く）
+output/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# OS / エディタ
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+~$*.xlsx
