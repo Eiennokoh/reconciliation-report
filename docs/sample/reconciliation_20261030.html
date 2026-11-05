@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>残高照合レポート</title><style>
+:root{--bg:#f6f5f2;--panel:#fff;--ink:#1d1f23;--muted:#666b73;--line:#e3e1dc;
+--accent:#1f4e79;--hi:#b42318;--hi-bg:#fde8e6;--mid:#9a5b00;--mid-bg:#fdf1dc;--lo:#3d6b35;--lo-bg:#e6f2e2;
+--ok:#1f6f43;--ok-bg:#e3f3ea;--warn:#8a3b00;--warn-bg:#fdebd9;--code-bg:#f0eee9}
+@media (prefers-color-scheme:dark){:root{--bg:#15171a;--panel:#1e2125;--ink:#e8e6e1;--muted:#9aa0a8;--line:#30343a;
+--accent:#8cb8e6;--hi:#ff8a80;--hi-bg:#3a1f1d;--mid:#f0b45a;--mid-bg:#3a2d17;--lo:#9fd28f;--lo-bg:#1f3320;
+--ok:#7fd3a4;--ok-bg:#183326;--warn:#f5a66b;--warn-bg:#3a2516;--code-bg:#262a2f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 16px 48px}
+header h1{margin:0 0 4px;font-size:22px;letter-spacing:.02em}
+header .meta{color:var(--muted);font-size:13px}
+.mode{display:inline-block;margin-top:8px;padding:2px 10px;border-radius:999px;font-size:12px;border:1px solid var(--line);background:var(--panel)}
+h2{font-size:16px;margin:32px 0 12px;padding-left:10px;border-left:4px solid var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:20px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.kpi .l{font-size:12px;color:var(--muted)} .kpi .v{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--muted)}
+.tbl{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13px}
+.tbl th,.tbl td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{background:var(--code-bg);font-weight:600;white-space:nowrap}
+.tbl td.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.scroll{overflow-x:auto;border-radius:10px}
+.badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.p-高{color:var(--hi);background:var(--hi-bg)} .p-中{color:var(--mid);background:var(--mid-bg)} .p-低{color:var(--lo);background:var(--lo-bg)}
+.st-ok{color:var(--ok);background:var(--ok-bg)} .st-fb{color:var(--warn);background:var(--warn-bg)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card .top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px}
+.card .code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--muted)}
+.card .name{font-weight:700;font-size:16px}
+.card .cat{color:var(--accent);font-weight:600;font-size:14px;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:6px 18px;font-size:13px;margin:8px 0 12px;
+padding:10px 12px;background:var(--code-bg);border-radius:8px}
+.grid div span{color:var(--muted);margin-right:6px}
+.grid b{font-variant-numeric:tabular-nums}
+.label{font-size:12px;color:var(--muted);margin-top:8px}
+.text{margin:2px 0 0}
+.rej{margin-top:10px;padding:8px 12px;border-left:3px solid var(--warn);background:var(--warn-bg);font-size:13px}
+.rej s{opacity:.8}
+.note{font-size:13px;color:var(--muted)}
+footer{margin-top:40px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+</style></head>
+<body><div class="wrap">
+<header><h1>カストディ残高照合レポート</h1>
+<div class="meta">架空日本株・国債バランスファンド　|　基準日 2026-10-30　|　作成 2026-11-05 17:42</div>
+<span class="mode">AI：モックモード（--mock 指定）</span></header>
+
+<div class="kpis">
+ <div class="kpi"><div class="l">照合銘柄数</div><div class="v">49</div><div class="s">カストディ 48 / 当社 48</div></div>
+ <div class="kpi"><div class="l">一致</div><div class="v">43</div><div class="s">許容誤差内を含む</div></div>
+ <div class="kpi"><div class="l">差異</div><div class="v" style="color:var(--hi)">6</div><div class="s">数量 2 ・ 価格 3 ・ 片側 2</div></div>
+ <div class="kpi"><div class="l">評価額差異（絶対値合計）</div><div class="v">547,505,000</div><div class="s">円</div></div>
+</div>
+<h2>差異一覧</h2>
+<div class="scroll"><table class="tbl">
+<thead><tr><th>優先度</th><th>コード</th><th>銘柄</th><th>差異区分</th><th>推定原因</th><th>評価額差異（円）</th><th>説明</th><th>対応状況</th></tr></thead>
+<tbody><tr><td><span class='badge p-高'>高</span></td><td>BD0012</td><td>利付国債（10年）第362回〔架空〕</td><td>片側のみ</td><td>償還・売却の未反映の疑い（当社記録のみに存在）</td><td class='n'>-500,250,000</td><td><span class='badge st-ok'>検証OK</span></td><td>未対応</td></tr><tr><td><span class='badge p-高'>高</span></td><td>EQ0031</td><td>かがやき光学</td><td>片側のみ</td><td>当社記録漏れの疑い（カストディのみに存在）</td><td class='n'>+32,960,000</td><td><span class='badge st-ok'>検証OK</span></td><td>未対応</td></tr><tr><td><span class='badge p-中'>中</span></td><td>BD0004</td><td>利付国債（10年）第354回〔架空〕</td><td>価格差異</td><td>価格差異（原因要調査）</td><td class='n'>+7,000,000</td><td><span class='badge st-ok'>検証OK</span></td><td>未対応</td></tr><tr><td><span class='badge p-中'>中</span></td><td>EQ0007</td><td>やまびこ食品</td><td>数量差異</td><td>取引の未計上（約定・受渡のずれを含む）</td><td class='n'>+5,720,000</td><td><span class='badge st-fb'>差し戻し</span></td><td>未対応</td></tr><tr><td><span class='badge p-中'>中</span></td><td>EQ0022</td><td>はやて情報システム</td><td>価格差異</td><td>価格ソースの違い</td><td class='n'>+1,575,000</td><td><span class='badge st-ok'>検証OK</span></td><td>未対応</td></tr><tr><td><span class='badge p-中'>中</span></td><td>EQ0015</td><td>ふじみ不動産</td><td>数量差異・価格差異</td><td>株式分割（併合）の未反映</td><td class='n'>0</td><td><span class='badge st-ok'>検証OK</span></td><td>未対応</td></tr></tbody></table></div>
+<h2>差異の詳細と説明</h2>
+<div class="card">
+ <div class="top"><span class="badge p-高">優先度 高</span>
+  <span class="code">BD0012・日本国債</span>
+  <span class="name">利付国債（10年）第362回〔架空〕</span>
+  <span class="badge st-ok">モック説明（数値検証OK）</span></div>
+ <div class="cat">償還・売却の未反映の疑い（当社記録のみに存在）<span class="note">　判定根拠：当社記録にあり、カストディの残高に該当銘柄がない</span></div>
+ <div class="grid"><div><span>当社数量</span><b>額面500,000,000円</b></div><div><span>当社単価</span><b>100.05円</b></div><div><span>当社評価額</span><b>500,250,000円</b></div><div><span>評価額差異（カストディ−当社）</span><b>-500,250,000円</b></div><div><span>当社価格ソース</span><b>日証協 売買参考統計値</b></div></div>
+ <div class="label">説明</div><p class="text">当社記録には額面500,000,000円（評価額500,250,000円）がありますが、カストディの残高にはありません。償還・売却の未反映や、カストディへの受渡未了の可能性があります。</p>
+ <div class="label">対応案</div><p class="text">償還スケジュールと受渡状況を確認し、カストディに照会してください。</p>
+ 
+</div>
+<div class="card">
+ <div class="top"><span class="badge p-高">優先度 高</span>
+  <span class="code">EQ0031・国内株式</span>
+  <span class="name">かがやき光学</span>
+  <span class="badge st-ok">モック説明（数値検証OK）</span></div>
+ <div class="cat">当社記録漏れの疑い（カストディのみに存在）<span class="note">　判定根拠：カストディの残高にあり、当社記録に該当銘柄がない</span></div>
+ <div class="grid"><div><span>カストディ数量</span><b>8,000株</b></div><div><span>カストディ単価</span><b>4,120円</b></div><div><span>カストディ評価額</span><b>32,960,000円</b></div><div><span>評価額差異（カストディ−当社）</span><b>+32,960,000円</b></div><div><span>カストディ価格ソース</span><b>東証終値</b></div></div>
+ <div class="label">説明</div><p class="text">カストディには8,000株（評価額32,960,000円）の残高がありますが、当社記録には該当銘柄がありません。買付の未計上や銘柄マスタの登録漏れの可能性があります。</p>
+ <div class="label">対応案</div><p class="text">約定記録と銘柄マスタを確認し、該当する取引を計上してください。</p>
+ 
+</div>
+<div class="card">
+ <div class="top"><span class="badge p-中">優先度 中</span>
+  <span class="code">BD0004・日本国債</span>
+  <span class="name">利付国債（10年）第354回〔架空〕</span>
+  <span class="badge st-ok">モック説明（数値検証OK）</span></div>
+ <div class="cat">価格差異（原因要調査）<span class="note">　判定根拠：単価が許容範囲を超えているが、価格ソースは同じ</span></div>
+ <div class="grid"><div><span>カストディ数量</span><b>額面1,000,000,000円</b></div><div><span>当社数量</span><b>額面1,000,000,000円</b></div><div><span>数量差異（カストディ−当社）</span><b>±額面0円</b></div><div><span>カストディ単価</span><b>99.82円</b></div><div><span>当社単価</span><b>99.12円</b></div><div><span>単価差異率</span><b>+0.71%</b></div><div><span>カストディ評価額</span><b>998,200,000円</b></div><div><span>当社評価額</span><b>991,200,000円</b></div><div><span>評価額差異（カストディ−当社）</span><b>+7,000,000円</b></div><div><span>カストディ価格ソース</span><b>日証協 売買参考統計値</b></div><div><span>当社価格ソース</span><b>日証協 売買参考統計値</b></div></div>
+ <div class="label">説明</div><p class="text">単価がカストディ99.82円、当社99.12円で、評価額差異は+7,000,000円です。価格ソースは同じ「日証協 売買参考統計値」のため、入力ミスや取得時点の違いの可能性があります。</p>
+ <div class="label">対応案</div><p class="text">双方の価格取得記録と取得時刻を確認し、原因が分かるまで差異として管理してください。</p>
+ 
+</div>
+<div class="card">
+ <div class="top"><span class="badge p-中">優先度 中</span>
+  <span class="code">EQ0007・国内株式</span>
+  <span class="name">やまびこ食品</span>
+  <span class="badge st-fb">テンプレート（数値不一致のため差し戻し）</span></div>
+ <div class="cat">取引の未計上（約定・受渡のずれを含む）<span class="note">　判定根拠：数量だけが一致しない</span></div>
+ <div class="grid"><div><span>カストディ数量</span><b>12,000株</b></div><div><span>当社数量</span><b>10,000株</b></div><div><span>数量差異（カストディ−当社）</span><b>+2,000株</b></div><div><span>カストディ単価</span><b>2,860円</b></div><div><span>当社単価</span><b>2,860円</b></div><div><span>単価差異率</span><b>±0.00%</b></div><div><span>カストディ評価額</span><b>34,320,000円</b></div><div><span>当社評価額</span><b>28,600,000円</b></div><div><span>評価額差異（カストディ−当社）</span><b>+5,720,000円</b></div><div><span>カストディ価格ソース</span><b>東証終値</b></div><div><span>当社価格ソース</span><b>東証終値</b></div></div>
+ <div class="label">説明</div><p class="text">数量差異を検出しました。推定原因は「取引の未計上（約定・受渡のずれを含む）」、評価額差異は+5,720,000円です。</p>
+ <div class="label">対応案</div><p class="text">約定記録を確認し、未計上の取引があれば計上してください。</p>
+ <div class='rej'><b>AI の説明を差し戻しました。</b>計算結果にない数字・表現：3,000<br><s>説明：カストディの数量は12,000株、当社は10,000株で、+2,000株の差があります。約定済みの取引が当社に未計上か、受渡日のずれによる差の可能性があります。なお、前月末にも3,000株の同様の差異が出ていました。</s></div>
+</div>
+<div class="card">
+ <div class="top"><span class="badge p-中">優先度 中</span>
+  <span class="code">EQ0022・国内株式</span>
+  <span class="name">はやて情報システム</span>
+  <span class="badge st-ok">モック説明（数値検証OK）</span></div>
+ <div class="cat">価格ソースの違い<span class="note">　判定根拠：単価が許容範囲を超え、価格ソースも異なる</span></div>
+ <div class="grid"><div><span>カストディ数量</span><b>45,000株</b></div><div><span>当社数量</span><b>45,000株</b></div><div><span>数量差異（カストディ−当社）</span><b>±0株</b></div><div><span>カストディ単価</span><b>3,415円</b></div><div><span>当社単価</span><b>3,380円</b></div><div><span>単価差異率</span><b>+1.04%</b></div><div><span>カストディ評価額</span><b>153,675,000円</b></div><div><span>当社評価額</span><b>152,100,000円</b></div><div><span>評価額差異（カストディ−当社）</span><b>+1,575,000円</b></div><div><span>カストディ価格ソース</span><b>東証終値</b></div><div><span>当社価格ソース</span><b>評価ベンダーA</b></div></div>
+ <div class="label">説明</div><p class="text">単価がカストディ3,415円、当社3,380円で、差異率+1.04%と許容範囲を超えています。カストディは「東証終値」、当社は「評価ベンダーA」を使っており、価格ソースの違いによる差の可能性があります。</p>
+ <div class="label">対応案</div><p class="text">ファンドの評価方針で定めた価格ソースを確認し、どちらを正とするか評価担当と合意したうえで修正してください。</p>
+ 
+</div>
+<div class="card">
+ <div class="top"><span class="badge p-中">優先度 中</span>
+  <span class="code">EQ0015・国内株式</span>
+  <span class="name">ふじみ不動産</span>
+  <span class="badge st-ok">モック説明（数値検証OK）</span></div>
+ <div class="cat">株式分割（併合）の未反映<span class="note">　判定根拠：数量比が1:2で、評価額の差が1%以内（単価が逆比率で動いている）</span></div>
+ <div class="grid"><div><span>カストディ数量</span><b>6,000株</b></div><div><span>当社数量</span><b>3,000株</b></div><div><span>数量差異（カストディ−当社）</span><b>+3,000株</b></div><div><span>カストディ単価</span><b>1,250円</b></div><div><span>当社単価</span><b>2,500円</b></div><div><span>単価差異率</span><b>-50.00%</b></div><div><span>カストディ評価額</span><b>7,500,000円</b></div><div><span>当社評価額</span><b>7,500,000円</b></div><div><span>評価額差異（カストディ−当社）</span><b>±0円</b></div><div><span>カストディ価格ソース</span><b>東証終値</b></div><div><span>当社価格ソース</span><b>東証終値</b></div><div><span>分割比率（当社:カストディ）</span><b>1:2</b></div></div>
+ <div class="label">説明</div><p class="text">カストディの数量は6,000株、当社は3,000株で、比率は1:2です。単価もほぼ逆の比率で動き、評価額差異は±0円にとどまるため、株式分割が当社に未反映の可能性があります。</p>
+ <div class="label">対応案</div><p class="text">コーポレートアクション情報で分割比率と効力発生日を確認し、当社の数量と単価を修正してください。</p>
+ 
+</div>
+<h2>AI 利用状況</h2>
+<table class="tbl">
+<tr><th>実行モード</th><td>AI：モックモード（--mock 指定）</td></tr>
+<tr><th>AI 呼び出し回数</th><td>0 回（モックのため送信なし。API モードでも送るのは差異 6 件分の数値だけで、証券コード・銘柄名は送りません）</td></tr>
+<tr><th>トークン数</th><td>入力 0 ／ 出力 0</td></tr>
+<tr><th>推定費用</th><td>0 円（API を呼んでいません）<div class="note">API キーを設定すると、実際のトークン数と推定費用がここに入ります。</div></td></tr>
+<tr><th>数値検証</th><td>5 件合格 ／ 1 件はテンプレート説明に差し戻し</td></tr>
+</table>
+<h2>照合ルール</h2>
+<table class="tbl"><thead><tr><th>資産区分</th><th>価格の許容誤差</th></tr></thead><tbody><tr><td>国内株式</td><td>±0.5%</td></tr><tr><td>日本国債</td><td>±0.05円（額面100円あたり）</td></tr></tbody></table>
+<p class="note">数量は完全一致で判定します。評価額は、株式＝数量×単価、国債＝額面×単価÷100 で計算しています。
+差異の検出・原因の分類・すべての数字はプログラムが算出し、AI は説明文と対応案の作成だけを担当します。</p>
+<footer>このレポートのデータはすべて架空です。実在の銘柄・ファンド・金融機関とは関係ありません。</footer>
+</div></body></html>
