@@ -95,7 +95,7 @@ CSV×2    コード    ルール    AI＋数値検査   HTML / Excel
 Python 3.10 以上が必要です。
 
 ```bash
-git clone https://github.com/<your-account>/reconciliation-report.git
+git clone https://github.com/Eiennokoh/reconciliation-report.git
 cd reconciliation-report
 python -m venv .venv
 .venv\Scripts\activate             # macOS / Linux は source .venv/bin/activate
